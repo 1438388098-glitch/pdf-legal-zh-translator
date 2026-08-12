@@ -56,7 +56,7 @@ def _read_pages(path):
     pages = []          # list of list-of-lines, one per page
     headings = {}       # page_index (0-based) -> [heading lines]
     current = None
-    with io.open(path, "r", encoding="utf-8") as fh:
+    with io.open(path, "r", encoding="utf-8-sig") as fh:
         lines = fh.read().splitlines()
     for line in lines:
         m = PAGE_RE.match(line)

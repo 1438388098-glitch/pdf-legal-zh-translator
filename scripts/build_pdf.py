@@ -82,7 +82,7 @@ def inline(md_text):
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
 HORIZ_RULE_RE = re.compile(r"^\s*(---+|\*\*\*+)\s*$")
 BULLET_RE = re.compile(r"^\s*[-*+]\s+(.*)$")
-NUMBER_RE = re.compile(r"^\s*\d+[.)]\s+(.*)$")
+NUMBER_RE = re.compile(r"^\s*(\d+)[.)]\s+(.*)$")
 TABLE_MARKER_RE = re.compile(r"^【表格[^】]*】\s*$")
 TABLE_ROW_RE = re.compile(r"^\s*\|.*\|\s*$")
 TABLE_SEP_RE = re.compile(r"^\s*\|[\s:|:-]*\|?\s*$")
@@ -147,7 +147,7 @@ def main():
         ]))
         return tbl
 
-    with io.open(md_path, "r", encoding="utf-8") as fh:
+    with io.open(md_path, "r", encoding="utf-8-sig") as fh:
         raw = fh.read()
 
     lines = raw.splitlines()
@@ -222,6 +222,7 @@ def main():
         b = BULLET_RE.match(line)
         num = NUMBER_RE.match(line)
         if b or num:
+            is_numbered = bool(num)
             items = []
             start = 1
             while i < n and (BULLET_RE.match(lines[i]) or NUMBER_RE.match(lines[i])):
@@ -229,12 +230,23 @@ def main():
                 nm = NUMBER_RE.match(lines[i])
                 if nm:
                     start = int(nm.group(1))
-                items.append(Paragraph(inline((bm or nm).group(1).strip()),
-                                       styles["list"]))
+                if nm:
+                    item_text = nm.group(2).strip()
+                    items.append(Paragraph(inline("%d. %s" % (start, item_text)),
+                                           styles["list"]))
+                    start += 1
+                else:
+                    item_text = (bm.group(1) if bm else "").strip()
+                    items.append(Paragraph(inline(item_text), styles["list"]))
                 i += 1
-            flowables.append(ListFlowable(
-                items, bulletType="bullet" if b else "1",
-                start=start, leftIndent=18, spaceAfter=6))
+            if is_numbered:
+                # numbers are already in the text; render as indented paragraphs
+                # (reportlab's auto-numbered ListFlowable is buggy with int bullets)
+                for it in items:
+                    flowables.append(it)
+            else:
+                flowables.append(ListFlowable(
+                    items, bulletType="bullet", leftIndent=18, spaceAfter=6))
             continue
 
         para = []

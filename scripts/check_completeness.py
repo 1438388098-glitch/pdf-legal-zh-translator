@@ -45,7 +45,7 @@ if hasattr(sys.stdout, "buffer"):
 
 
 def _read_lines(path):
-    with io.open(path, "r", encoding="utf-8") as fh:
+    with io.open(path, "r", encoding="utf-8-sig") as fh:
         return fh.read().splitlines()
 
 
@@ -94,7 +94,7 @@ def main():
         print("ERROR: manifest.json not found in %s" % args.chunks_dir)
         return 1
 
-    with io.open(manifest_path, "r", encoding="utf-8") as fh:
+    with io.open(manifest_path, "r", encoding="utf-8-sig") as fh:
         manifest = json.load(fh)
 
     src_pages = _count_pages(_read_lines(args.extracted_txt))

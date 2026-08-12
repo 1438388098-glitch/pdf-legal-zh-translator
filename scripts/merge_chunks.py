@@ -42,7 +42,7 @@ def main():
         print("ERROR: manifest.json not found in %s" % args.chunks_dir)
         return 1
 
-    with io.open(manifest_path, "r", encoding="utf-8") as fh:
+    with io.open(manifest_path, "r", encoding="utf-8-sig") as fh:
         manifest = json.load(fh)
 
     merged = []
@@ -54,7 +54,7 @@ def main():
         if not os.path.isfile(tpath):
             missing.append(base + "_zh.md")
             continue
-        with io.open(tpath, "r", encoding="utf-8") as fh:
+        with io.open(tpath, "r", encoding="utf-8-sig") as fh:
             text = fh.read()
         lines = []
         for line in text.splitlines():

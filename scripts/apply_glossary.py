@@ -54,9 +54,9 @@ def _next_nonspace(text, i):
 
 def _apply_entry(text, en, zh, min_len):
     if len(en) < min_len:
-        return text
+        return text, 0
     if en == zh or en in zh:
-        return text
+        return text, 0
     pattern = re.compile(r"(?<![A-Za-z])" + re.escape(en) + r"(?![A-Za-z])")
     out = []
     last_end = 0
@@ -91,9 +91,9 @@ def main():
         print("ERROR: input not found: %s" % args.input_md)
         return 1
 
-    with io.open(args.glossary_json, "r", encoding="utf-8") as fh:
+    with io.open(args.glossary_json, "r", encoding="utf-8-sig") as fh:
         glossary = json.load(fh)
-    with io.open(args.input_md, "r", encoding="utf-8") as fh:
+    with io.open(args.input_md, "r", encoding="utf-8-sig") as fh:
         text = fh.read()
 
     entries = []

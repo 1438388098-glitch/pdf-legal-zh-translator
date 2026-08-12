@@ -40,7 +40,7 @@ if hasattr(sys.stdout, "buffer"):
 
 
 def _load_json(path):
-    with io.open(path, "r", encoding="utf-8") as fh:
+    with io.open(path, "r", encoding="utf-8-sig") as fh:
         return json.load(fh)
 
 
