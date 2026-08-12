@@ -80,7 +80,7 @@ python scripts/merge_chunks.py chunks <name>_zh.md
 # 7. 确定性回填术语一致性
 python scripts/apply_glossary.py <skill_dir>/glossary.json <name>_zh.md
 
-# 8. 生成中文 PDF
+# 8. 生成中文 PDF（自动目录 + 章节新页）
 python scripts/build_pdf.py <name>_zh.md <name>_zh.pdf
 ```
 
@@ -94,7 +94,7 @@ python scripts/build_pdf.py <name>_zh.md <name>_zh.pdf
 | `apply_glossary.py` | 用最终术语表确定性回填正文中残留的英文术语为 `中文 (English)` 规范形式 |
 | `check_completeness.py` | 自动校验每块译文的页标记覆盖（硬错误）、译文/源长度比、标题缺失 |
 | `merge_chunks.py` | 按 manifest 顺序拼接各块译文，剥离页标记与上下文块；缺失块报错 |
-| `build_pdf.py` | Markdown → 中文 PDF；自动选字体，渲染标题/列表/代码块/Markdown 表格，页脚页码 |
+| `build_pdf.py` | Markdown → 中文 PDF；自动选字体，生成目录（TOC）、章节新页分页，渲染标题/列表/引用/Markdown 表格（自适应列宽+表头底纹+隔行着色），页脚页码 |
 
 ## 术语表格式
 

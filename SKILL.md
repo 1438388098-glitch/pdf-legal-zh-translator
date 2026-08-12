@@ -199,11 +199,14 @@ python <skill_dir>/scripts/apply_glossary.py <skill_dir>/glossary.json <name>_zh
 ## Step 8 — Regenerate the PDF
 
 ```
-python <skill_dir>/scripts/build_pdf.py <name>_zh.md <name>_zh.pdf
+python <skill_dir>/scripts/build_pdf.py <name>_zh.md <name>_zh.pdf [--toc-max-level 2]
 ```
 
-The script auto-selects a system Chinese font, adds page numbers, and renders
-Markdown headings, lists, and tables.
+The script auto-selects a system Chinese font, generates a table of contents
+from the h1/h2 headings, starts a new page before chapter/part headings
+(`--new-page REGEX` to override), renders Markdown headings, lists, block
+quotes, and tables (fitted columns, shaded header, alternating rows), and
+adds page numbers in the footer. Use `--no-toc` to skip the TOC.
 
 ## Step 9 — Save the glossary
 

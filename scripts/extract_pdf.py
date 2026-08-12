@@ -54,6 +54,23 @@ def _is_page_number(text):
     return bool(m)
 
 
+# Running heads that carry page numbers, e.g. "7 The Role of the Executive 7",
+# "16  sources and techniques", "historical background  15". These repeat only
+# within a chapter (< 40% of pages) and therefore escape the frequency-based
+# header classifier; they still belong in the header/footer zone.
+_RUNNING_HEAD_RE = re.compile(
+    r"^\s*(?:"
+    r"\d{1,4}\s+[^\d\s].{0,60}\s+\d{1,4}"                       # "7 ... 7"
+    r"|\d{1,4}\s+[A-Za-z\u4e00-\u9fff][A-Za-z\u4e00-\u9fff\d]{2,40}"  # "16 sources and techniques"
+    r"|[A-Za-z\u4e00-\u9fff].{0,60}\s{2,}\d{1,4}"               # "historical background  15"
+    r")\s*$"
+)
+
+
+def _is_running_head(text):
+    return len(text) <= 90 and bool(_RUNNING_HEAD_RE.match(text))
+
+
 # ---------------------------------------------------------------------------
 # Table detection
 # ---------------------------------------------------------------------------
@@ -286,17 +303,23 @@ def extract(pdf_path, out_path, clean=True):
     # --- Decide which repeated header/footer texts to drop ---
     drop_norms = set()
 
-    def classify(zones, min_occur=2):
+    def classify(zones, min_occur=2, frac=0.4, pred=None):
         counts = {}
-        for _, norm, _t in zones:
+        for _, norm, text in zones:
+            if pred is not None and not pred(text):
+                continue
             counts[norm] = counts.get(norm, 0) + 1
         for norm, c in counts.items():
-            if c >= min_occur and c >= 0.4 * page_count:
+            if c >= min_occur and c >= frac * page_count:
                 drop_norms.add(norm)
 
     if clean and page_count >= 2:
         classify(header_zone_blocks)
         classify(footer_zone_blocks)
+        # running heads with page numbers repeat chapter-wide, not doc-wide;
+        # drop them once they appear on >= 2 pages
+        classify(header_zone_blocks, min_occur=2, frac=0.0, pred=_is_running_head)
+        classify(footer_zone_blocks, min_occur=2, frac=0.0, pred=_is_running_head)
 
     # --- Write output ---
     total_chars = 0
