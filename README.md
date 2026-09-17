@@ -142,3 +142,9 @@ Key design: extract page-by-page text (auto-stripping headers/footers/page numbe
 **Requirements:** Python 3 + `PyMuPDF` + `reportlab`; a system Chinese font (bundled on Windows).
 
 **Scripts:** `extract_pdf.py`, `split_chunks.py`, `merge_glossary.py`, `apply_glossary.py`, `check_completeness.py`, `merge_chunks.py`, `build_pdf.py`.
+
+## 验证与示例
+
+- **[examples/](examples/)**：公有领域文本（美国宪法修正案、42 U.S.C. § 1983）端到端示例——源 PDF 生成、分块、译文、术语合并、完整性校验、最终中文 PDF 与页面截图，附真实质量数据表（含一条按设计触发的长度比告警的说明）
+- **测试**：`python -m unittest discover -s tests`（6 例）覆盖术语合并规则（基础表优先/首登记者胜出/冲突告警）、页覆盖硬校验（缺页 exit 1）、长度比告警路径、合并顺序与页标记剥离、缺译文报错
+- **License**: [MIT](LICENSE)

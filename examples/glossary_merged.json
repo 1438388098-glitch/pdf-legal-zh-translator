@@ -1,0 +1,27 @@
+{
+  "institutions": {
+    "Congress": "国会",
+    "United States": "美国"
+  },
+  "laws": {
+    "First Amendment": "第一条修正案",
+    "Fourteenth Amendment": "第十四条修正案",
+    "42 U.S.C. § 1983": "《美国法典》第 42 编第 1983 条"
+  },
+  "cases": {},
+  "doctrine": {
+    "equal protection": "平等保护",
+    "due process of law": "正当法律程序",
+    "under color of law": "在州法授权之下",
+    "previous restraint": "事先限制",
+    "privileges or immunities": "特权与豁免",
+    "good-faith immunity": "善意豁免"
+  },
+  "general": {
+    "injunctive relief": "禁制性救济",
+    "declaratory decree": "宣告性判令",
+    "action at law": "普通法上的诉讼",
+    "suit in equity": "衡平法上的诉讼",
+    "defenses": "抗辩事由"
+  }
+}

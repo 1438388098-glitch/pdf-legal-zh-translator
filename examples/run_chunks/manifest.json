@@ -1,0 +1,25 @@
+{
+  "source": "run_extracted.txt",
+  "total_pages": 2,
+  "target_pages_per_chunk": 1,
+  "chunks": [
+    {
+      "index": 1,
+      "file": "chunk_001.txt",
+      "pages": [
+        1,
+        1
+      ],
+      "headings": []
+    },
+    {
+      "index": 2,
+      "file": "chunk_002.txt",
+      "pages": [
+        2,
+        2
+      ],
+      "headings": []
+    }
+  ]
+}
