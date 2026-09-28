@@ -1,5 +1,7 @@
 English · [简体中文](./README.zh-CN.md)
 
+[![CI](https://github.com/1438388098-glitch/pdf-legal-zh-translator/actions/workflows/ci.yml/badge.svg)](https://github.com/1438388098-glitch/pdf-legal-zh-translator/actions/workflows/ci.yml)
+
 # pdf-legal-zh-translator
 
 A professional English → Chinese AI **Skill** for **long political & legal PDFs**.

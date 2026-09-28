@@ -1,5 +1,7 @@
 [English](./README.md) · 简体中文
 
+[![CI](https://github.com/1438388098-glitch/pdf-legal-zh-translator/actions/workflows/ci.yml/badge.svg)](https://github.com/1438388098-glitch/pdf-legal-zh-translator/actions/workflows/ci.yml)
+
 # pdf-legal-zh-translator
 
 面向**政治与法律文献长文本 PDF** 的英→中专业翻译 AI Skill。
