@@ -1,0 +1,22 @@
+# CI：全量测试门禁（6 例 unittest）
+# 依赖说明：纯标准库（io/json/os/subprocess/tempfile 等，零第三方依赖），
+# 测试以 sys.path 直连 scripts/，无需安装步骤。
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: 全量单测（6 例）
+        run: python -m unittest discover -s tests
