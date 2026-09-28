@@ -6,6 +6,10 @@
 
 > 简体中文 | [English](#english-overview)
 
+> 📸 **成品速览**（公有领域文本端到端翻译）：[第 1 页](examples/screenshot_page1.png) · [第 2 页](examples/screenshot_page2.png) · [第 3 页](examples/screenshot_page3.png)
+>
+> **English TL;DR** — An AI translation skill for hundred-page legal & policy PDFs (treaties, statutes, judgments, government reports): chunked parallel translation with a race-free shared glossary, fidelity to U.S. statutory and case citations (`§ 1983`, *Miranda v. Arizona*), hard page-coverage verification, and multi-agent QA — output as a typeset Chinese PDF. End-to-end examples on public-domain texts are in [examples/](examples/).
+
 ---
 
 ## 特性
