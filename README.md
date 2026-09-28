@@ -1,58 +1,56 @@
+English · [简体中文](./README.zh-CN.md)
+
 # pdf-legal-zh-translator
 
-面向**政治与法律文献长文本 PDF** 的英→中专业翻译 AI Skill。
+A professional English → Chinese AI **Skill** for **long political & legal PDFs**.
 
-将长达数百页的英文 PDF（文章、条约、法规、法院判决、政府报告、政策文件、学术法律文献）翻译为正式、专业、术语一致的中文，并生成中文 PDF。专为超长文档设计：分块并行翻译 + 共享术语表 + 多 agent 审查，保证术语一致性、引用完整性和全文覆盖。
+It translates English PDFs of hundreds of pages (articles, treaties, statutes, court opinions, government reports, policy documents, academic legal literature) into formal, professional, terminology-consistent Chinese and produces a Chinese PDF. Built for very long documents: chunked parallel translation + a shared glossary + multi-agent review ensure terminology consistency, citation integrity, and full-document coverage.
 
-> 简体中文 | [English](#english-overview)
-
-> 📸 **成品速览**（公有领域文本端到端翻译）：[第 1 页](examples/screenshot_page1.png) · [第 2 页](examples/screenshot_page2.png) · [第 3 页](examples/screenshot_page3.png)
->
-> **English TL;DR** — An AI translation skill for hundred-page legal & policy PDFs (treaties, statutes, judgments, government reports): chunked parallel translation with a race-free shared glossary, fidelity to U.S. statutory and case citations (`§ 1983`, *Miranda v. Arizona*), hard page-coverage verification, and multi-agent QA — output as a typeset Chinese PDF. End-to-end examples on public-domain texts are in [examples/](examples/).
+> 📸 **Quick look at the output** (end-to-end translation of public-domain texts): [Page 1](examples/screenshot_page1.png) · [Page 2](examples/screenshot_page2.png) · [Page 3](examples/screenshot_page3.png)
 
 ---
 
-## 特性
+## Features
 
-- **任意长度 PDF**：按页提取、按章节边界分块，数百页文档也能完整翻译
-- **并行翻译**：每块派一个子 agent 并行翻译，显著缩短长文档翻译耗时
-- **术语一致性**：共享 `glossary.json` 术语表（唯一真源），新术语由各块 agent 写入独立 terms 文件后统一合并，杜绝并行写竞态
-- **法条引用保真**：`§ 1983`、`5 U.S.C. § 552`、`Miranda v. Arizona` 原样保留
-- **机构/法律/案例名首现标注英文原名**：`联邦最高法院 (Supreme Court of the United States)`
-- **自动去页眉/页脚/页码**：重复页眉页脚与裸页码自动剔除
-- **表格支持**：表格自动识别并转为 Markdown 表格，翻译单元格后以原生表格渲染进 PDF
-- **跨块上下文**：每块附带上一块结尾作上下文，避免切块处语句断裂
-- **完整性自动校验**：脚本核对每块页标记覆盖、译文长度比，缺页即失败
-- **多 agent 质量审查**：术语 / 引用 / 完整性 / 语言 四类并行审查 + 确定性术语回填
-- **输出中文 PDF**：自动选用系统中文字体（微软雅黑/黑体/宋体），支持标题、列表、表格、页码
+- **PDFs of any length**: text is extracted page by page and split at section boundaries, so documents of hundreds of pages are translated in full
+- **Parallel translation**: one sub-agent per chunk, substantially shortening translation time for long documents
+- **Terminology consistency**: a shared `glossary.json` (single source of truth); new terms are written by each chunk agent to its own terms file and then merged centrally, eliminating parallel-write races
+- **Statute/citation fidelity**: `§ 1983`, `5 U.S.C. § 552`, *Miranda v. Arizona* are preserved verbatim
+- **First-occurrence English annotations** for institution/law/case names: `联邦最高法院 (Supreme Court of the United States)`
+- **Automatic header/footer/page-number removal**: repeated headers/footers and bare page numbers are stripped automatically
+- **Table support**: tables are detected automatically, converted to Markdown tables, their cells translated, and rendered as native tables in the PDF
+- **Cross-chunk context**: each chunk carries the tail of the previous chunk as context, avoiding broken sentences at chunk boundaries
+- **Automated completeness verification**: a script checks per-chunk page-marker coverage and translation length ratio; any missing page fails the run
+- **Multi-agent quality review**: four parallel reviews (terminology / citations / completeness / language) + deterministic glossary back-fill
+- **Chinese PDF output**: automatically selects a system Chinese font (Microsoft YaHei / SimHei / SimSun); supports headings, lists, tables, and page numbers
 
-## 工作流程
+## Workflow
 
 ```
-PDF ──①提取──> 文本(按页) ──②预建术语表──> glossary.json
-   ──③分块──> chunk_001.txt … (含上下文) + manifest.json
-   ──④并行翻译──> chunk_XXX_zh.md + chunk_XXX_terms.json
-   ──④b 合并术语表──> merge_glossary.py
-   ──⑤ 完整性校验──> check_completeness.py (硬校验页覆盖)
-   ──⑥ 合并──> <name>_zh.md
-   ──⑦ 多agent审查 + apply_glossary.py 回填
-   ──⑧ 生成PDF──> <name>_zh.pdf
+PDF ──① extract──> text (page-by-page) ──② pre-build glossary──> glossary.json
+   ──③ split into chunks──> chunk_001.txt … (with context) + manifest.json
+   ──④ parallel translation──> chunk_XXX_zh.md + chunk_XXX_terms.json
+   ──④b merge glossary──> merge_glossary.py
+   ──⑤ completeness check──> check_completeness.py (hard page-coverage verification)
+   ──⑥ merge──> <name>_zh.md
+   ──⑦ multi-agent review + apply_glossary.py back-fill
+   ──⑧ render PDF──> <name>_zh.pdf
 ```
 
-## 安装
+## Installation
 
-依赖脚本使用 Python 3，需要以下包：
+The scripts use Python 3 and require the following packages:
 
 ```bash
 pip install PyMuPDF reportlab
 ```
 
-- `PyMuPDF`（fitz）：PDF 文本/表格提取。`find_tables` 需 ≥ 1.23.8；旧版本自动回退到内置网格启发式。
-- `reportlab`：中文 PDF 生成。需要系统中文字体（Windows 自带微软雅黑/黑体/宋体）。
+- `PyMuPDF` (fitz): PDF text/table extraction. `find_tables` requires ≥ 1.23.8; older versions automatically fall back to the built-in grid heuristic.
+- `reportlab`: Chinese PDF generation. Requires a system Chinese font (Windows bundles Microsoft YaHei / SimHei / SimSun).
 
-## 使用方法
+## Usage
 
-在 opencode 等支持 AI Skill 的环境中加载本 skill，然后：
+Load this skill in an AI-Skill-capable environment (e.g. opencode), then:
 
 ```
 Translate this PDF to Chinese
@@ -61,48 +59,48 @@ Create a Chinese version of <law/policy/treaty>
 翻译这份判决书/条约/政策文件
 ```
 
-或手动执行脚本流水线（详见 `SKILL.md` 的分步说明）：
+Or run the script pipeline manually (see `SKILL.md` for step-by-step instructions):
 
 ```bash
-# 1. 提取（自动去页眉页脚页码 + 表格识别）
+# 1. Extract (auto-strips headers/footers/page numbers + table detection)
 python scripts/extract_pdf.py input.pdf extracted.txt
 
-# 2. 分块（每块约 20 页，可调；附带跨块上下文）
+# 2. Split into chunks (~20 pages each, adjustable; with cross-chunk context)
 python scripts/split_chunks.py extracted.txt chunks --pages 20
 
-# 3. 并行翻译（每块一个子 agent，见 SKILL.md Step 4）
+# 3. Parallel translation (one sub-agent per chunk, see SKILL.md Step 4)
 
-# 4. 合并各块新术语到共享术语表
+# 4. Merge per-chunk new terms into the shared glossary
 python scripts/merge_glossary.py chunks <skill_dir>
 
-# 5. 完整性自动校验（缺页/截断会报错）
+# 5. Automated completeness check (missing pages / truncation raise errors)
 python scripts/check_completeness.py extracted.txt chunks
 
-# 6. 合并译文
+# 6. Merge translations
 python scripts/merge_chunks.py chunks <name>_zh.md
 
-# 7. 确定性回填术语一致性
+# 7. Deterministic glossary back-fill for consistency
 python scripts/apply_glossary.py <skill_dir>/glossary.json <name>_zh.md
 
-# 8. 生成中文 PDF（自动目录 + 章节新页）
+# 8. Generate the Chinese PDF (auto TOC + new page per section)
 python scripts/build_pdf.py <name>_zh.md <name>_zh.pdf
 ```
 
-## 脚本一览
+## Scripts
 
-| 脚本 | 作用 |
+| Script | Purpose |
 |---|---|
-| `extract_pdf.py` | PDF → 按页文本；自动剔除重复页眉/页脚/裸页码；检测扫描版/加密 PDF；表格识别（`find_tables` 或单词坐标启发式） |
-| `split_chunks.py` | 按章节边界平衡分块；每块头部附上一块末尾约 300 字符作上下文；产出 `manifest.json` |
-| `merge_glossary.py` | 合并 base glossary + 各 `chunk_XXX_terms.json`，首登记生效，冲突告警 |
-| `apply_glossary.py` | 用最终术语表确定性回填正文中残留的英文术语为 `中文 (English)` 规范形式 |
-| `check_completeness.py` | 自动校验每块译文的页标记覆盖（硬错误）、译文/源长度比、标题缺失 |
-| `merge_chunks.py` | 按 manifest 顺序拼接各块译文，剥离页标记与上下文块；缺失块报错 |
-| `build_pdf.py` | Markdown → 中文 PDF；自动选字体，生成目录（TOC）、章节新页分页，渲染标题/列表/引用/Markdown 表格（自适应列宽+表头底纹+隔行着色），页脚页码 |
+| `extract_pdf.py` | PDF → page-by-page text; auto-strips repeated headers/footers and bare page numbers; detects scanned/encrypted PDFs; table detection (`find_tables` or word-coordinate heuristics) |
+| `split_chunks.py` | Balanced chunking at section boundaries; each chunk header carries ~300 characters from the end of the previous chunk as context; produces `manifest.json` |
+| `merge_glossary.py` | Merges the base glossary + per-chunk `chunk_XXX_terms.json`; first registration wins, conflicts are warned |
+| `apply_glossary.py` | Uses the final glossary to deterministically back-fill residual English terms in the translation into the canonical `中文 (English)` form |
+| `check_completeness.py` | Verifies per-chunk translation page-marker coverage (hard error), translation/source length ratio, and missing headings |
+| `merge_chunks.py` | Concatenates chunk translations in manifest order, stripping page markers and context blocks; errors on missing chunks |
+| `build_pdf.py` | Markdown → Chinese PDF; auto font selection, TOC generation, new-page-per-section pagination, renders headings/lists/quotes/Markdown tables (adaptive column widths + header shading + zebra striping), footer page numbers |
 
-## 术语表格式
+## Glossary format
 
-`glossary.json` 是全文术语一致性的唯一真源，五类分组：
+`glossary.json` is the single source of truth for document-wide terminology consistency, with five groups:
 
 ```json
 {
@@ -114,41 +112,32 @@ python scripts/build_pdf.py <name>_zh.md <name>_zh.pdf
 }
 ```
 
-并行 agent **不得**直接修改共享 `glossary.json`（会写竞态丢条目），新术语写入各自的 `chunk_XXX_terms.json`，由 `merge_glossary.py` 统一合并。
+Parallel agents must **not** modify the shared `glossary.json` directly (parallel writes would race and lose entries); new terms go into each agent's own `chunk_XXX_terms.json` and are merged centrally by `merge_glossary.py`.
 
-## 输出文件
+## Output files
 
-- `<name>_zh.md` — 完整中文 Markdown 译文（与输入同目录）
-- `<name>_zh.pdf` — 渲染后的中文 PDF（标题/列表/表格/页码）
-- `<chunks_dir>/chunk_XXX_zh.md` — 各块译文（中间产物）
-- `<chunks_dir>/chunk_XXX_terms.json` — 各块新术语（中间产物）
-- `glossary.json` — 最终术语表（保存在 skill 目录）
+- `<name>_zh.md` — complete Chinese Markdown translation (same directory as the input)
+- `<name>_zh.pdf` — rendered Chinese PDF (headings/lists/tables/page numbers)
+- `<chunks_dir>/chunk_XXX_zh.md` — per-chunk translations (intermediate artifacts)
+- `<chunks_dir>/chunk_XXX_terms.json` — per-chunk new terms (intermediate artifacts)
+- `glossary.json` — final glossary (kept in the skill directory)
 
-## 限制
+## Limitations
 
-- **扫描版（图片）PDF** 不在范围内——需要 OCR，脚本会明确警告。
-- **加密 PDF** 需先解密。
-- 翻译质量受基础模型能力影响；法条引用由审查 agent 复核，术语一致性由脚本兜底，但仍建议专业场景人工终审。
-- 旧版 PyMuPDF（< 1.23.8）的表格识别为启发式，复杂版式（跨页合并单元格、嵌套表格）可能无法完整还原。
+- **Scanned (image) PDFs** are out of scope — OCR would be required; the script warns explicitly.
+- **Encrypted PDFs** must be decrypted first.
+- Translation quality depends on the underlying model; statutory citations are re-checked by the review agents and terminology consistency is enforced by scripts as a safety net, but a human final review is still recommended for professional use.
+- With older PyMuPDF (< 1.23.8), table detection is heuristic; complex layouts (cells merged across pages, nested tables) may not be fully reconstructed.
 
-## 相关
+## Validation & examples
 
-设计文档见 [`docs/2026-08-12-pdf-poli-law-translator-design.md`](docs/2026-08-12-pdf-poli-law-translator-design.md)，完整工作流说明见 [`SKILL.md`](SKILL.md)。
+- **[examples/](examples/)**: an end-to-end example on public-domain texts (U.S. Constitution amendments, 42 U.S.C. § 1983) — source PDF generation, chunking, translations, glossary merge, completeness check, final Chinese PDF and page screenshots, with a real quality-data table (including an explanation of one length-ratio warning triggered by design)
+- **Tests**: `python -m unittest discover -s tests` (6 cases) covering glossary merge rules (base table takes priority / first registration wins / conflict warnings), the page-coverage hard check (missing page → exit 1), the length-ratio warning path, merge order and page-marker stripping, and missing-translation errors
 
----
+## Related
 
-## English overview
+The design document is at [`docs/2026-08-12-pdf-poli-law-translator-design.md`](docs/2026-08-12-pdf-poli-law-translator-design.md); full workflow instructions are in [`SKILL.md`](SKILL.md).
 
-An AI **Skill** that translates long English political/legal PDFs (articles, treaties, statutes, court opinions, government reports, policy papers — hundreds of pages) into professional Chinese and produces a Chinese PDF.
+## License
 
-Key design: extract page-by-page text (auto-stripping headers/footers/page numbers, detecting tables), split into chunks at section boundaries with cross-chunk context, translate chunks **in parallel** using sub-agents sharing a glossary for terminology consistency, merge per-chunk term files without write races, run an automated completeness gate, merge, multi-agent quality review with deterministic glossary back-fill, and finally render a Chinese PDF.
-
-**Requirements:** Python 3 + `PyMuPDF` + `reportlab`; a system Chinese font (bundled on Windows).
-
-**Scripts:** `extract_pdf.py`, `split_chunks.py`, `merge_glossary.py`, `apply_glossary.py`, `check_completeness.py`, `merge_chunks.py`, `build_pdf.py`.
-
-## 验证与示例
-
-- **[examples/](examples/)**：公有领域文本（美国宪法修正案、42 U.S.C. § 1983）端到端示例——源 PDF 生成、分块、译文、术语合并、完整性校验、最终中文 PDF 与页面截图，附真实质量数据表（含一条按设计触发的长度比告警的说明）
-- **测试**：`python -m unittest discover -s tests`（6 例）覆盖术语合并规则（基础表优先/首登记者胜出/冲突告警）、页覆盖硬校验（缺页 exit 1）、长度比告警路径、合并顺序与页标记剥离、缺译文报错
-- **License**: [MIT](LICENSE)
+[MIT](LICENSE)
