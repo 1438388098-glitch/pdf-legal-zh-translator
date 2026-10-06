@@ -49,6 +49,7 @@ pip install PyMuPDF reportlab
 
 - `PyMuPDF`（fitz）：PDF 文本/表格提取。`find_tables` 需 ≥ 1.23.8；旧版本自动回退到内置网格启发式。
 - `reportlab`：中文 PDF 生成。需要系统中文字体（Windows 自带微软雅黑/黑体/宋体）。
+- 两者已列入 [`requirements.txt`](requirements.txt)，便于可复现安装：`pip install -r requirements.txt`。
 
 ## 使用方法
 

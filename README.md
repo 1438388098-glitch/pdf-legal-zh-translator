@@ -49,6 +49,7 @@ pip install PyMuPDF reportlab
 
 - `PyMuPDF` (fitz): PDF text/table extraction. `find_tables` requires ≥ 1.23.8; older versions automatically fall back to the built-in grid heuristic.
 - `reportlab`: Chinese PDF generation. Requires a system Chinese font (Windows bundles Microsoft YaHei / SimHei / SimSun).
+- Both are listed in [`requirements.txt`](requirements.txt) for a reproducible install: `pip install -r requirements.txt`.
 
 ## Usage
 

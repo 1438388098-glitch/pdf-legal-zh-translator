@@ -1,0 +1,4 @@
+# Runtime dependencies for the EN→ZH translation pipeline scripts (pip install -r requirements.txt).
+# PyMuPDF >= 1.23.8 is required for find_tables; older versions fall back to a grid heuristic.
+PyMuPDF>=1.23.8
+reportlab
